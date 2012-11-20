@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "underscore": "~1.4.2",
-    "nano": "~3.3.3"
+    "nano": "~3.3.3",
+    "inflection": "~1.2.3",
+    "schemajs": "~0.1.10"
   },
   "devDependencies": {
     "should": "*",

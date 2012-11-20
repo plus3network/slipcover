@@ -6,7 +6,7 @@ describe('index.js extend(object)', function () {
 
   it('should extend the object with the base object', function () {
     var App = app.extend({ });
-    var object = new App();
+    var object = new App({ conn: {} });
     
     should.exist(object.app, 'missing app parameter');
     object.app.should.be.a('object');
@@ -43,7 +43,7 @@ describe('index.js extend(object)', function () {
       }
     });
 
-    var object = new App();
+    var object = new App({ conn: {} });
 
     should.exist(object.transformers.foo);
     object.transformers.foo.should.be.a('function');
@@ -51,5 +51,12 @@ describe('index.js extend(object)', function () {
     should.exist(object.transformers.get);
     object.transformers.get.should.be.a('function');
     object.transformers.get.should.eql(get);
+  });
+
+  it('should set the type parameter', function () {
+    var App = app.extend({ type: 'test' });
+    var object = new App({ conn: {} });
+    should.exist(object.type);
+    object.type.should.eql('test');
   });
 });

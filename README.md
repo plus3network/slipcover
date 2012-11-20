@@ -1,4 +1,4 @@
 BeanBag
 =======
 
-A framework for creating a web service layer on top CouchDB using Restify.
+A framework for creating a data model web service layer on top CouchDB using Restify.

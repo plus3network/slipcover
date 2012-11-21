@@ -12,7 +12,7 @@ BeanBag.App = function (options) {
   this.options = options || {};
   this.type = this.options.type || this.type || 'record';
 
-  if (this.options.model && this.options.model instanceof BeanBag.Model) {
+  if (this.options.model) {
     this.model = this.options.model;
   } else {
     if(this.options.conn) {

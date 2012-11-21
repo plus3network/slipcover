@@ -1,77 +1,188 @@
 var _ = require('underscore');
 var util = require('util');
+var schema = require('schemajs');
 var inflection = require('inflection');
-var app = require('./lib/app');
 var routes = require('./lib/routes');
 
+var BeanBag = {};
+module.exports = BeanBag;
 
 // The main constructor for the BeanBag object
-var BeanBag = module.exports = function (options) {
+BeanBag.App = function (options) {
   this.options = options || {};
   this.type = this.options.type || this.type || 'record';
 
-  if(this.options.conn) {
-    this.conn = options.conn;
+  if (this.options.model && this.options.model instanceof BeanBag.Model) {
+    this.model = this.options.model;
   } else {
-    throw new Error("You must provide a connection to CouchDB using options.conn.");
+    if(this.options.conn) {
+      this.conn = this.options.conn;
+    } else {
+      throw new Error("You must provide a connection to CouchDB using options.conn.");
+    }
+    this.model = new BeanBag.Model({ conn: this.conn, type: this.type });
   }
 
   // Setup the default routes
   var defaultRoutes= {};
-  defaultRoutes[util.format('GET /%s', inflection.pluralize(this.type))] = 'list';
   defaultRoutes[util.format('GET /%s/:id', inflection.singularize(this.type))] = 'get';
   defaultRoutes[util.format('PUT /%s', inflection.pluralize(this.type))] = 'create';
   defaultRoutes[util.format('POST /%s/:id', inflection.singularize(this.type))] = 'update';
   defaultRoutes[util.format('DELETE /%s/:id', inflection.singularize(this.type))] = 'del';
   this.routes = _.extend(defaultRoutes, this.routes);
 
-  if(this.initialize && typeof(this.initialize) === 'function') {
+  if (this.initialize && typeof(this.initialize) === 'function') {
     this.initialize.call(this, options);
   }
 };
 
 // Extend the BeanBag object with the default routes. 
-BeanBag.prototype = _.extend(routes, BeanBag.prototype);
-
-// Set the application methods
-BeanBag.prototype.app = app;
+BeanBag.App.prototype = _.extend(BeanBag.App.prototype, routes);
 
 // This will mount the applicaton to the Restify server.
-BeanBag.prototype.mount = function (server) {
+BeanBag.App.prototype.mount = function (server) {
   var keys = Object.keys(this.routes);
   var self = this;
   keys.forEach(function (route) {
     var parts = route.split(/ /);
-    if(parts.length === 2 && parts[0] && ~['HEAD','GET','PUT','POST','DELETE'].indexOf(parts[0])) {
+    if (parts.length === 2 && parts[0] && ~['HEAD','GET','PUT','POST','DELETE'].indexOf(parts[0])) {
       // if the verb is DELETE we need to convert it to del for compatibility
       // sake since delete is a keyword.
       var verb = (parts[0] === 'DELETE')?  'del' : parts[0].toLowerCase();  
       var action = self.routes[route];
 
       // Now that we have the verb and route we need to hook it up to the callback
-      if(self[action] && typeof(self[action]) === 'function') {
+      if (self[action] && typeof(self[action]) === 'function') {
         server[verb](parts[1], self[action]);
       }
     }
   });
 };
 
-// This function was heavliy inspired (as in copied) from Backbone.js. with the
-// exception of the transformer extension code.
-BeanBag.extend = function (protoProps, classProps) {
-  var child = inherits(this, protoProps, classProps);
-  child.extend = this.extend;
-  child.prototype.transformers = _.extend(defaultTransformers, protoProps.transformers);
-  return child;
+// Set the application methods
+BeanBag.Model = function (options) {
+  this.options = options || {};
+  this.type = this.options.type || this.type || 'record';
+
+  if (this.options.conn) {
+    this.conn = options.conn;
+  } else {
+    throw new Error("You must provide a connection to CouchDB using options.conn.");
+  }
+
+  if (this.initialize && typeof(this.initialize) === 'function') {
+    this.initialize.call(this, options);
+  }
 };
 
+BeanBag.Model.prototype.schema = { type: { type: 'string', required: true} };
+
+BeanBag.Model.prototype.get = function (id, callback) {
+  var self = this;
+  this.conn.get(id, function (err, object) {
+    if (err) {
+      return callback(err);
+    }
+
+    self.transformers.get(object, callback);
+  });
+};
+
+
+
+BeanBag.Model.prototype.create = function (rawObject, callback) {
+  var self = this;
+  this.transformers.create(rawObject, function (err, object) {
+    var model = schema.create(self.schema);
+    var check = model.validate(object);
+    if (!check.valid) {
+      var keys = Object.keys(check.errors);
+      return callback(new Error(check.errors[keys[0]]));
+    }
+      
+    object.created_on = new Date();
+    self.conn.insert(object, function (err, data) {
+      if (err) {
+        return callback(err);
+      }
+
+      object._id = data.id;
+      object._rev = data.rev;
+
+      self.transformers.get(object, callback);
+    });
+  });
+};
+
+BeanBag.Model.prototype.update = function (rawObject, callback) {
+  
+  if (!rawObject._id) {
+    return callback(new Error('_id is a required parameter'));
+  }
+
+  if (!rawObject._rev) {
+    return callback(new Error('_rev is a required parameter'));
+  }
+
+  var self = this;
+
+  this.transformers.update(rawObject, function (err, object) {
+    var model = schema.create(self.schema);
+    var check = model.validate(object);
+    if (!check.valid) {
+      var keys = Object.keys(check.errors);
+      return callback(new Error(check.errors[keys[0]]));
+    }
+
+    object.updated_on = new Date();
+    self.conn.insert(object, object._id, function (err, data) {
+      if (err) {
+        return callback(err);
+      }
+
+      object._rev = data.rev;
+
+      self.transformers.get(object, callback);
+    });
+  });
+};
+
+BeanBag.Model.prototype.del = function (id, callback) {
+  var self = this;
+  this.conn.get(id, function (err, object) {
+    if (err) {
+      return callback (err);
+    }
+
+    self.conn.destroy(id, object._rev, function (err, body) {
+      if (err) {
+        return callback(err);
+      }
+
+      callback(null, body);
+    });
+  });
+};
+
+
 // The default transformers that match up with the routes
-var defaultTransformers = {
+var defaultTransformers = BeanBag.Model.prototype.transformers = {
   get: function (record, callback) { callback(null, record); },
-  list: function (records, callback) { callback(null, records); },
   update: function (record, callback) { callback(null, record); },
   create: function (record, callback) { callback(null, record); }
 };
+
+// This function was heavliy inspired (as in copied) from Backbone.js. with the
+// exception of the transformer extension code.
+BeanBag.Model.extend = BeanBag.App.extend = function (protoProps, classProps) {
+  var child = inherits(this, protoProps, classProps);
+  child.extend = this.extend;
+  if (protoProps.transformers) {
+    child.prototype.transformers = _.extend(defaultTransformers, protoProps.transformers);
+  }
+  return child;
+};
+
 
 /**
  *  THESE METHODS ARE BARROWED HEAVILY FROM Backbone.js

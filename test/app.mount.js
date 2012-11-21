@@ -14,7 +14,7 @@ describe('index.js BeanBag.prototype.mount(server)', function () {
       head: sinon.stub()
     };
 
-    var App = BeanBag.extend({ type: 'example' });
+    var App = BeanBag.App.extend({ type: 'example' });
     app = new App({ conn: {} });
     app.mount(server);
   });
@@ -28,9 +28,9 @@ describe('index.js BeanBag.prototype.mount(server)', function () {
   });
 
   it('should call server.get for the read route', function () {
-    sinon.assert.calledTwice(server.get);
-    server.get.args[1][0].should.eql('/example/:id');
-    server.get.args[1][1].should.eql(app.get);
+    sinon.assert.calledOnce(server.get);
+    server.get.args[0][0].should.eql('/example/:id');
+    server.get.args[0][1].should.eql(app.get);
   });
 
   it('should call server.put for the put route', function () {

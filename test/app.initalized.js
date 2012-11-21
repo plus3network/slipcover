@@ -1,6 +1,6 @@
 var should = require('should');
 var sinon = require('sinon');
-var app = require(__dirname+'/../index');
+var BeanBag = require(__dirname+'/../index');
 
 describe('index.js app.initalize(options)', function () {
 
@@ -9,7 +9,7 @@ describe('index.js app.initalize(options)', function () {
   beforeEach(function () {
     initializeStub = sinon.stub();
     options = { conn: {}, type: 'example' };
-    App = app.extend({
+    App = BeanBag.App.extend({
       initialize: initializeStub,
       routes: {
         'GET /example/:id/minimal': 'minimal'
@@ -27,10 +27,9 @@ describe('index.js app.initalize(options)', function () {
   it('should extend the routes', function () {
     should.exist(object.routes);
     var routes = Object.keys(object.routes);
-    routes.should.be.length(6);
+    routes.should.be.length(5);
     routes.should.include('GET /example/:id/minimal');
     routes.should.include('GET /example/:id');
-    routes.should.include('GET /examples');
     routes.should.include('PUT /examples');
     routes.should.include('POST /example/:id');
     routes.should.include('DELETE /example/:id');

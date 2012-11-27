@@ -60,7 +60,7 @@ var ExampleModel = SlipCover.Model.extend({
   // gives you the ability to transfrom the data without touching
   // the route or model methods. This is a good way to deal with
   // models that need joins. An example would be fetching the Authors
-  // for all the blog posts.
+  // for all the Blog posts.
   transformers: {
     get: function (record, callback) {
       // do something to transform the data

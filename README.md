@@ -16,6 +16,34 @@ A framework for creating a data model web service layer on top CouchDB using Res
 npm install slipcover
 ```
 
+### Built In Routes
+
+The SlipCover.App class comes with some built in routes based on the model type
+
+```
+Method   Route                  Function
+-------------------------------------------------------
+GET     /<plural type>          SlipCover.App.list()
+GET     /<singular type>/:id    SlipCover.App.get()
+PUT     /<plural type>          SlipCover.App.create()
+POST    /<signular type>/:id    SlipCover.App.update()
+DELETE  /<singular type>/:id    SlipCover.App.del()
+```
+
+The above using `user` as the `type` would look like this:
+
+```
+Method   Route                  Function
+-------------------------------------------------------
+GET     /users                  SlipCover.App.list()
+GET     /user/:id               SlipCover.App.get()
+PUT     /users                  SlipCover.App.create()
+POST    /user/:id               SlipCover.App.update()
+DELETE  /user/:id               SlipCover.App.del()
+```
+
+Each SlipCover.App method has a coresponding SlipCover.model method that matches. So for SlipCover.App.get() there is a coresponding SlipCover.Model.get() that matches.
+
 ### Example
 
 ```javascript
@@ -30,7 +58,9 @@ var ExampleModel = SlipCover.Model.extend({
   
   // You can setup a transformer for get, create, updates. This
   // gives you the ability to transfrom the data without touching
-  // the routes.
+  // the route or model methods. This is a good way to deal with
+  // models that need joins. An example would be fetching the Authors
+  // for all the blog posts.
   transformers: {
     get: function (record, callback) {
       // do something to transform the data

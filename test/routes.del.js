@@ -12,7 +12,7 @@ describe('BeanBag.del(req, res, next)', function () {
   var model, req, res, next, app;
   
   beforeEach(function () {
-    model = { del: sinon.stub() };
+    model = { del: sinon.stub(), type: 'record' };
     req = { params: { id: '9df92dc0338b11e281c10800200c9a66' } };
     res = { send: sinon.stub() };
     next = sinon.stub();

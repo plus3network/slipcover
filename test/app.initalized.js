@@ -27,7 +27,8 @@ describe('index.js app.initalize(options)', function () {
   it('should extend the routes', function () {
     should.exist(object.routes);
     var routes = Object.keys(object.routes);
-    routes.should.be.length(5);
+    routes.should.be.length(6);
+    routes.should.include('GET /examples');
     routes.should.include('GET /example/:id/minimal');
     routes.should.include('GET /example/:id');
     routes.should.include('PUT /examples');

@@ -16,7 +16,7 @@ describe('BeanBag.get(req, res, next)', function () {
   var model, req, res, next, app;
   
   beforeEach(function () {
-    model = { get: sinon.stub() };
+    model = { get: sinon.stub(), type: 'record' };
     req = { params: { id: 'a66c0000336711e281c10800200c9a66' } };
     res = { send: sinon.stub() };
     next = sinon.stub();

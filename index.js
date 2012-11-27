@@ -2,7 +2,7 @@ var _ = require('underscore');
 var util = require('util');
 var schema = require('schemajs');
 var inflection = require('inflection');
-var routes = require('./lib/routes');
+var restify = require('restify');
 
 var BeanBag = {};
 module.exports = BeanBag;
@@ -25,19 +25,84 @@ BeanBag.App = function (options) {
 
   // Setup the default routes
   var defaultRoutes= {};
-  defaultRoutes[util.format('GET /%s/:id', inflection.singularize(this.type))] = 'get';
-  defaultRoutes[util.format('PUT /%s', inflection.pluralize(this.type))] = 'create';
-  defaultRoutes[util.format('POST /%s/:id', inflection.singularize(this.type))] = 'update';
-  defaultRoutes[util.format('DELETE /%s/:id', inflection.singularize(this.type))] = 'del';
+  defaultRoutes[util.format('GET /%s', inflection.pluralize(this.model.type))] = 'list';
+  defaultRoutes[util.format('GET /%s/:id', inflection.singularize(this.model.type))] = 'get';
+  defaultRoutes[util.format('PUT /%s', inflection.pluralize(this.model.type))] = 'create';
+  defaultRoutes[util.format('POST /%s/:id', inflection.singularize(this.model.type))] = 'update';
+  defaultRoutes[util.format('DELETE /%s/:id', inflection.singularize(this.model.type))] = 'del';
   this.routes = _.extend(defaultRoutes, this.routes);
+
+  // We need to bind all the route activities to use the app as it's scope
+  _.bindAll(this, 'get', 'list', 'create', 'update', 'del');
 
   if (this.initialize && typeof(this.initialize) === 'function') {
     this.initialize.call(this, options);
   }
 };
 
-// Extend the BeanBag object with the default routes. 
-BeanBag.App.prototype = _.extend(BeanBag.App.prototype, routes);
+BeanBag.App.prototype.list = function (req, res, next) {
+
+  if (!this.model.list) {
+    return next(Error('You must define a list method for your model'));
+  }
+
+  var limit = req.query.limit || 20;
+  var start = ((req.query.page || 1)-1)*limit;
+  
+  var options = {
+    limit: limit,
+    skip: start 
+  };
+
+  this.model.list(options, function (err, objects) {
+    if (err) {
+      return next(err);
+    }
+
+    res.send(200, objects);
+  });
+};
+
+BeanBag.App.prototype.get = function (req, res, next) {
+  this.model.get(req.params.id, function (err, object) {
+    if (err) {
+      return next(err);
+    }
+
+    res.send(200, object);
+  });
+};
+
+BeanBag.App.prototype.create = function (req, res, next) {
+  this.model.create(req.body, function (err, object) {
+    if (err) {
+      return next(err);
+    }
+
+    res.send(201, object);
+  });
+};
+
+BeanBag.App.prototype.update = function (req, res, next) {
+  this.model.update(req.body, function (err, object) {
+    if (err) {
+      return next(err);
+    }
+
+    res.send(201, object);
+  });
+};
+
+BeanBag.App.prototype.del = function (req, res, next) {
+  this.model.del(req.params.id, function (err, resp) {
+    if (err) {
+      return next(err);
+    }
+
+    res.send(204, resp);
+  });
+
+};
 
 // This will mount the applicaton to the Restify server.
 BeanBag.App.prototype.mount = function (server) {
@@ -84,6 +149,10 @@ BeanBag.Model.prototype.get = function (id, callback) {
       return callback(err);
     }
 
+    if (object.type !== self.type) {
+      return callback(new restify.ResourceNotFoundError());
+    }
+
     self.transformers.get(object, callback);
   });
 };
@@ -97,7 +166,7 @@ BeanBag.Model.prototype.create = function (rawObject, callback) {
     var check = model.validate(object);
     if (!check.valid) {
       var keys = Object.keys(check.errors);
-      return callback(new Error(check.errors[keys[0]]));
+      return callback(new restify.InvalidArgumentError(check.errors[keys[0]]));
     }
       
     object.created_on = new Date();
@@ -131,7 +200,7 @@ BeanBag.Model.prototype.update = function (rawObject, callback) {
     var check = model.validate(object);
     if (!check.valid) {
       var keys = Object.keys(check.errors);
-      return callback(new Error(check.errors[keys[0]]));
+      return callback(new restify.InvalidArgumentError(check.errors[keys[0]]));
     }
 
     object.updated_on = new Date();
@@ -154,6 +223,10 @@ BeanBag.Model.prototype.del = function (id, callback) {
       return callback (err);
     }
 
+    if (object.type !== self.type) {
+      return callback(new restify.ResourceNotFoundError());
+    }
+
     self.conn.destroy(id, object._rev, function (err, body) {
       if (err) {
         return callback(err);
@@ -167,6 +240,7 @@ BeanBag.Model.prototype.del = function (id, callback) {
 
 // The default transformers that match up with the routes
 var defaultTransformers = BeanBag.Model.prototype.transformers = {
+  list: function (records, callback) { callback(null, records); },
   get: function (record, callback) { callback(null, record); },
   update: function (record, callback) { callback(null, record); },
   create: function (record, callback) { callback(null, record); }
@@ -178,7 +252,7 @@ BeanBag.Model.extend = BeanBag.App.extend = function (protoProps, classProps) {
   var child = inherits(this, protoProps, classProps);
   child.extend = this.extend;
   if (protoProps.transformers) {
-    child.prototype.transformers = _.extend(defaultTransformers, protoProps.transformers);
+    child.prototype.transformers = _.defaults(protoProps.transformers,defaultTransformers);
   }
   return child;
 };

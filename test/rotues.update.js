@@ -16,7 +16,7 @@ describe('BeanBag.update(req, res, next)', function () {
   var model, req, res, next, app;
   
   beforeEach(function () {
-    model = { update: sinon.stub() };
+    model = { update: sinon.stub(), type: 'record' };
     req = { body: fakeResponse };
     res = { send: sinon.stub() };
     next = sinon.stub();

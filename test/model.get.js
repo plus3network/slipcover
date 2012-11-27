@@ -1,6 +1,8 @@
 var should = require('should');
 var sinon = require('sinon');
 var BeanBag = require(__dirname+'/../index');
+var _ = require('underscore');
+var restify = require('restify');
 
 var fakeRecord = {
   _id: 'a66c0000336711e281c10800200c9a66', 
@@ -18,7 +20,6 @@ describe('BeanBag.Model.prototype.get(rawObject, callback)', function () {
     conn = {
       get: sinon.stub()
     };
-    conn.get.yields(null, fakeRecord);
 
     transformers = {
       get: sinon.stub()
@@ -33,6 +34,7 @@ describe('BeanBag.Model.prototype.get(rawObject, callback)', function () {
   });
 
   it('should call this.conn.get once', function (done) {
+    conn.get.yields(null, fakeRecord);
     model.get('a66c0000336711e281c10800200c9a66', function (err, record) {
       sinon.assert.calledOnce(conn.get);
       done();
@@ -40,8 +42,19 @@ describe('BeanBag.Model.prototype.get(rawObject, callback)', function () {
   });
 
   it('should call this.transforms.get once', function (done) {
+    conn.get.yields(null, fakeRecord);
     model.get('a66c0000336711e281c10800200c9a66', function (err, record) {
       sinon.assert.calledOnce(transformers.get);
+      done();
+    });
+  });
+
+  it('should fail if the source object type doesnt match', function (done) {
+    var object = _.clone(fakeRecord);
+    object.type = 'foo';
+    conn.get.yields(null, object);
+    model.get('a66c0000336711e281c10800200c9a66', function (err, record) {
+      err.should.be.an.instanceOf(restify.ResourceNotFoundError);
       done();
     });
   });

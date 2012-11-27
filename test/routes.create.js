@@ -7,7 +7,7 @@ describe('BeanBag.create(req, res, next)', function () {
   var model, req, res, next, app;
   
   beforeEach(function () {
-    model = { create: sinon.stub() };
+    model = { create: sinon.stub(), type: 'record' };
     req = { body: { name: 'Test', type: 'record' } };
     res = { send: sinon.stub() };
     next = sinon.stub();

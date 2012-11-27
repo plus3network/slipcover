@@ -1,13 +1,13 @@
 var should = require('should');
 var sinon = require('sinon');
-var BeanBag = require(__dirname+'/../index');
+var SlipCover = require(__dirname+'/../index');
 
 var fakeResponse = {
   ok: true,
   rev: '1-9df92dc0338b11e281c10800200c9a66'
 };
 
-describe('BeanBag.del(req, res, next)', function () {
+describe('SlipCover.del(req, res, next)', function () {
   
   var model, req, res, next, app;
   
@@ -16,7 +16,7 @@ describe('BeanBag.del(req, res, next)', function () {
     req = { params: { id: '9df92dc0338b11e281c10800200c9a66' } };
     res = { send: sinon.stub() };
     next = sinon.stub();
-    app = new BeanBag.App({ model: model });
+    app = new SlipCover.App({ model: model });
   });
  
   it('should call model.del() with req.body', function () {

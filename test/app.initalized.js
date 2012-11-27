@@ -1,6 +1,6 @@
 var should = require('should');
 var sinon = require('sinon');
-var BeanBag = require(__dirname+'/../index');
+var SlipCover = require(__dirname+'/../index');
 
 describe('index.js app.initalize(options)', function () {
 
@@ -9,7 +9,7 @@ describe('index.js app.initalize(options)', function () {
   beforeEach(function () {
     initializeStub = sinon.stub();
     options = { conn: {}, type: 'example' };
-    App = BeanBag.App.extend({
+    App = SlipCover.App.extend({
       initialize: initializeStub,
       routes: {
         'GET /example/:id/minimal': 'minimal'

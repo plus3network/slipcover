@@ -1,11 +1,11 @@
 var sinon = require('sinon');
 var should = require('should');
-var BeanBag = require(__dirname+'/../index.js');
+var SlipCover = require(__dirname+'/../index.js');
 
 describe('index.js extend(object)', function () {
 
   it('should extend the object with the base object', function () {
-    var App = BeanBag.App.extend({ });
+    var App = SlipCover.App.extend({ });
     var object = new App({ conn: {} });
     
     should.exist(object.model, 'missing model parameter');
@@ -31,14 +31,14 @@ describe('index.js extend(object)', function () {
   });
 
   it('should set the type parameter', function () {
-    var App = BeanBag.App.extend({ type: 'test' });
+    var App = SlipCover.App.extend({ type: 'test' });
     var object = new App({ conn: {} });
     should.exist(object.type);
     object.type.should.eql('test');
   });
 
   it('should set the same type parameter for the model when it\'s not present', function () {
-    var App = BeanBag.App.extend({ type: 'test' });
+    var App = SlipCover.App.extend({ type: 'test' });
     var object = new App({ conn: {} });
     should.exist(object.type);
     object.type.should.eql('test');

@@ -4,11 +4,11 @@ var schema = require('schemajs');
 var inflection = require('inflection');
 var restify = require('restify');
 
-var BeanBag = {};
-module.exports = BeanBag;
+var SlipCover = {};
+module.exports = SlipCover;
 
-// The main constructor for the BeanBag object
-BeanBag.App = function (options) {
+// The main constructor for the SlipCover object
+SlipCover.App = function (options) {
   this.options = options || {};
   this.type = this.options.type || this.type || 'record';
 
@@ -20,7 +20,7 @@ BeanBag.App = function (options) {
     } else {
       throw new Error("You must provide a connection to CouchDB using options.conn.");
     }
-    this.model = new BeanBag.Model({ conn: this.conn, type: this.type });
+    this.model = new SlipCover.Model({ conn: this.conn, type: this.type });
   }
 
   // Setup the default routes
@@ -40,7 +40,7 @@ BeanBag.App = function (options) {
   }
 };
 
-BeanBag.App.prototype.list = function (req, res, next) {
+SlipCover.App.prototype.list = function (req, res, next) {
 
   if (!this.model.list) {
     return next(Error('You must define a list method for your model'));
@@ -63,7 +63,7 @@ BeanBag.App.prototype.list = function (req, res, next) {
   });
 };
 
-BeanBag.App.prototype.get = function (req, res, next) {
+SlipCover.App.prototype.get = function (req, res, next) {
   this.model.get(req.params.id, function (err, object) {
     if (err) {
       return next(err);
@@ -73,7 +73,7 @@ BeanBag.App.prototype.get = function (req, res, next) {
   });
 };
 
-BeanBag.App.prototype.create = function (req, res, next) {
+SlipCover.App.prototype.create = function (req, res, next) {
   this.model.create(req.body, function (err, object) {
     if (err) {
       return next(err);
@@ -83,7 +83,7 @@ BeanBag.App.prototype.create = function (req, res, next) {
   });
 };
 
-BeanBag.App.prototype.update = function (req, res, next) {
+SlipCover.App.prototype.update = function (req, res, next) {
   this.model.update(req.body, function (err, object) {
     if (err) {
       return next(err);
@@ -93,7 +93,7 @@ BeanBag.App.prototype.update = function (req, res, next) {
   });
 };
 
-BeanBag.App.prototype.del = function (req, res, next) {
+SlipCover.App.prototype.del = function (req, res, next) {
   this.model.del(req.params.id, function (err, resp) {
     if (err) {
       return next(err);
@@ -105,7 +105,7 @@ BeanBag.App.prototype.del = function (req, res, next) {
 };
 
 // This will mount the applicaton to the Restify server.
-BeanBag.App.prototype.mount = function (server) {
+SlipCover.App.prototype.mount = function (server) {
   var keys = Object.keys(this.routes);
   var self = this;
   keys.forEach(function (route) {
@@ -125,7 +125,7 @@ BeanBag.App.prototype.mount = function (server) {
 };
 
 // Set the application methods
-BeanBag.Model = function (options) {
+SlipCover.Model = function (options) {
   this.options = options || {};
   this.type = this.options.type || this.type || 'record';
 
@@ -140,9 +140,9 @@ BeanBag.Model = function (options) {
   }
 };
 
-BeanBag.Model.prototype.schema = { type: { type: 'string', required: true} };
+SlipCover.Model.prototype.schema = { type: { type: 'string', required: true} };
 
-BeanBag.Model.prototype.get = function (id, callback) {
+SlipCover.Model.prototype.get = function (id, callback) {
   var self = this;
   this.conn.get(id, function (err, object) {
     if (err) {
@@ -159,7 +159,7 @@ BeanBag.Model.prototype.get = function (id, callback) {
 
 
 
-BeanBag.Model.prototype.create = function (rawObject, callback) {
+SlipCover.Model.prototype.create = function (rawObject, callback) {
   var self = this;
   this.transformers.create(rawObject, function (err, object) {
     var model = schema.create(self.schema);
@@ -183,7 +183,7 @@ BeanBag.Model.prototype.create = function (rawObject, callback) {
   });
 };
 
-BeanBag.Model.prototype.update = function (rawObject, callback) {
+SlipCover.Model.prototype.update = function (rawObject, callback) {
   
   if (!rawObject._id) {
     return callback(new Error('_id is a required parameter'));
@@ -216,7 +216,7 @@ BeanBag.Model.prototype.update = function (rawObject, callback) {
   });
 };
 
-BeanBag.Model.prototype.del = function (id, callback) {
+SlipCover.Model.prototype.del = function (id, callback) {
   var self = this;
   this.conn.get(id, function (err, object) {
     if (err) {
@@ -239,7 +239,7 @@ BeanBag.Model.prototype.del = function (id, callback) {
 
 
 // The default transformers that match up with the routes
-var defaultTransformers = BeanBag.Model.prototype.transformers = {
+var defaultTransformers = SlipCover.Model.prototype.transformers = {
   list: function (records, callback) { callback(null, records); },
   get: function (record, callback) { callback(null, record); },
   update: function (record, callback) { callback(null, record); },
@@ -248,7 +248,7 @@ var defaultTransformers = BeanBag.Model.prototype.transformers = {
 
 // This function was heavliy inspired (as in copied) from Backbone.js. with the
 // exception of the transformer extension code.
-BeanBag.Model.extend = BeanBag.App.extend = function (protoProps, classProps) {
+SlipCover.Model.extend = SlipCover.App.extend = function (protoProps, classProps) {
   var child = inherits(this, protoProps, classProps);
   child.extend = this.extend;
   if (protoProps.transformers) {

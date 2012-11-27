@@ -1,11 +1,11 @@
 var sinon = require('sinon');
 var should = require('should');
-var BeanBag = require(__dirname+'/../index.js');
+var SlipCover = require(__dirname+'/../index.js');
 
 describe('index.js extend(object)', function () {
 
   it('should extend the object with the base object', function () {
-    var App = BeanBag.Model.extend({ });
+    var App = SlipCover.Model.extend({ });
     var object = new App({ conn: {} });
     
     should.exist(object.get, 'missing get function');
@@ -24,7 +24,7 @@ describe('index.js extend(object)', function () {
 
   it('should extend the transformer parameter with the defaults', function () {
     var get = function (obj, callback) { console.log(object); callback(null, object); };
-    var Model = BeanBag.Model.extend({ 
+    var Model = SlipCover.Model.extend({ 
       transformers: {
         foo: function () { },
         get: get 
@@ -42,7 +42,7 @@ describe('index.js extend(object)', function () {
   });
 
   it('should set the type parameter', function () {
-    var App = BeanBag.App.extend({ type: 'test' });
+    var App = SlipCover.App.extend({ type: 'test' });
     var object = new App({ conn: {} });
     should.exist(object.type);
     object.type.should.eql('test');

@@ -1,6 +1,6 @@
 var should = require('should');
 var sinon = require('sinon');
-var BeanBag = require(__dirname+'/../index');
+var SlipCover = require(__dirname+'/../index');
 var _ = require('underscore');
 var restify = require('restify');
 
@@ -18,7 +18,7 @@ var fakeResponse = {
   rev: '1-b8f24770336711e281c10800200c9a66'
 };
 
-describe('BeanBag.Model.prototype.del(rawObject, callback)', function () {
+describe('SlipCover.Model.prototype.del(rawObject, callback)', function () {
 
   var model, conn, transformers;
   beforeEach(function () {
@@ -28,7 +28,7 @@ describe('BeanBag.Model.prototype.del(rawObject, callback)', function () {
     };
     conn.destroy.yields(null, fakeResponse);
 
-    var Model = BeanBag.Model.extend({});
+    var Model = SlipCover.Model.extend({});
     model = new Model({ conn: conn });
   });
 

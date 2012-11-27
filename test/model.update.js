@@ -1,6 +1,6 @@
 var should = require('should');
 var sinon = require('sinon');
-var BeanBag = require(__dirname+'/../index');
+var SlipCover = require(__dirname+'/../index');
 var _ = require('underscore');
 
 var fakeRecord = {
@@ -17,7 +17,7 @@ var fakeResponse = {
   rev: '2-b8f24770336711e281c10800200c9a66'
 };
 
-describe('BeanBag.Model.prototype.update(rawObject, callback)', function () {
+describe('SlipCover.Model.prototype.update(rawObject, callback)', function () {
 
   var model, conn, transformers;
   beforeEach(function () {
@@ -33,7 +33,7 @@ describe('BeanBag.Model.prototype.update(rawObject, callback)', function () {
     transformers.update.yields(null, fakeRecord);
     transformers.get.yields(null, fakeRecord);
 
-    var Model = BeanBag.Model.extend({
+    var Model = SlipCover.Model.extend({
       transformers: transformers
     });
 
@@ -101,7 +101,7 @@ describe('BeanBag.Model.prototype.update(rawObject, callback)', function () {
   });
   
   it('should fail validation if invalid', function (done) {
-    var Model = BeanBag.Model.extend({
+    var Model = SlipCover.Model.extend({
       schema: { test: { type: 'string', required: true }}
     });
     var model = new Model({ conn: conn });

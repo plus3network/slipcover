@@ -1,8 +1,8 @@
 var should = require('should');
 var sinon = require('sinon');
-var BeanBag = require(__dirname+'/../index');
+var SlipCover = require(__dirname+'/../index');
 
-describe('BeanBag.create(req, res, next)', function () {
+describe('SlipCover.create(req, res, next)', function () {
   
   var model, req, res, next, app;
   
@@ -11,7 +11,7 @@ describe('BeanBag.create(req, res, next)', function () {
     req = { body: { name: 'Test', type: 'record' } };
     res = { send: sinon.stub() };
     next = sinon.stub();
-    app = new BeanBag.App({ model: model });
+    app = new SlipCover.App({ model: model });
   });
  
   it('should call model.create() with req.body', function () {

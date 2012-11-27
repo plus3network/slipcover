@@ -1,8 +1,8 @@
 var should = require('should');
 var sinon = require('sinon');
-var BeanBag = require(__dirname+'/../index');
+var SlipCover = require(__dirname+'/../index');
 
-describe('index.js BeanBag.prototype.mount(server)', function () {
+describe('index.js SlipCover.prototype.mount(server)', function () {
   var server, app;
   
   beforeEach(function () {
@@ -14,7 +14,7 @@ describe('index.js BeanBag.prototype.mount(server)', function () {
       head: sinon.stub()
     };
 
-    var App = BeanBag.App.extend({ type: 'example' });
+    var App = SlipCover.App.extend({ type: 'example' });
     app = new App({ conn: {} });
     app.mount(server);
   });

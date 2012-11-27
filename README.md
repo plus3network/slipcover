@@ -5,7 +5,7 @@ A framework for creating a data model web service layer on top CouchDB using Res
 
 ### Features
 
-* Integrates with Nano and Restify
+* Integrates with [Nano](https://github.com/dscape/nano), [Restify](http://mcavage.github.com/node-restify/) and [SchemaJS](https://github.com/eleith/schemajs)
 * Easily create CRUD web services for document types
 * Familar Backbone like interface
 * Extend and overide basic interaces with ease

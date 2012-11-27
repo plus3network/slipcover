@@ -2,3 +2,112 @@ SlipCover
 =======
 
 A framework for creating a data model web service layer on top CouchDB using Restify.
+
+### Features
+
+* Integrates with Nano and Restify
+* Easily create CRUD web services for document types
+* Familar Backbone like interface
+* Extend and overide basic interaces with ease
+
+### Installing
+
+```
+npm install slipcover
+```
+
+### Example
+
+```javascript
+var restify = require('restify');
+var nano = require('nano')('http://localhost:5984');
+
+var SlipCover = require('slipcover');
+var _ = require('underscore');
+
+var ExampleModel = SlipCover.Model.extend({
+  type: 'example',
+  
+  // You can setup a transformer for get, create, updates. This
+  // gives you the ability to transfrom the data without touching
+  // the routes.
+  transformers: {
+    get: function (record, callback) {
+      // do something to transform the data
+      record.name = record.first_name + ' ' + record.last_name;
+      callback(null, record);
+    }
+  },
+  
+  // By default there is no list method. This is because you will 
+  // typically need to setup a view for your list opperation. The
+  // route is setup by default in the App so you just need to create
+  // your list method for the model.
+  list: function (options, callback) {
+    this.conn.view('examples', 'getByLastName', options, function (err, data) {
+      if (err) {
+        return callback(err);
+      }
+      
+      callback(null, data.rows);
+    });
+  }
+  
+});
+
+var ExampleApp = SlipCover.App.extend({
+  
+  // Just like backbone you can setup your own initialize method
+  initialize: funciton (options) {
+    // You will need to bind the instance of this object to
+    // your route methods.
+    _.bindAll(this, 'minimal');
+  },
+  
+  // Extend the default routes with your own.
+  routes: {
+    'GET /example/:id/minimal': 'minimal' 
+  },
+  
+  // The custom route method
+  minimal: function (req, res, next) {
+    this.model.get(req.params.id, function (err, example) {
+      if (err) {
+        return next(err);
+      }
+      
+      delete example.first_name;
+      delete example.last_name;
+      
+      res.send(200, example)
+    });
+  }
+  
+});
+
+// Setup a connection to the database
+var exampleDb = nano.db.use('exampledb');
+
+// When you initlaize your model you will need to pass
+// the database connection
+var model = new ExampleModel({ conn: exampleDb });
+
+// Pass your model to the app as an options upon initialization
+var app = new ExampleApp({ model: model });
+
+// Create your Restify server
+var server = restify.createServer();
+
+// Mount your application.
+app.mount(server);
+```
+
+### License
+
+The MIT License (MIT) Copyright (c) 2012 Plus 3 Network
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

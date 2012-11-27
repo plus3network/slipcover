@@ -60,7 +60,7 @@ var ExampleModel = SlipCover.Model.extend({
   // gives you the ability to transfrom the data without touching
   // the route or model methods. This is a good way to deal with
   // models that need joins. An example would be fetching the Authors
-  // for all the Blog posts.
+  // for all the blog posts.
   transformers: {
     get: function (record, callback) {
       // do something to transform the data
@@ -68,6 +68,14 @@ var ExampleModel = SlipCover.Model.extend({
       callback(null, record);
     }
   },
+  
+  // All create/update requests are validated against this schema
+  // See schemajs for more details.
+  schema: {
+    type: { type: 'string', required: true },
+    first_name: { type: 'string', required: true },
+    last_name: { type: 'string', require: true }
+  }
   
   // By default there is no list method. This is because you will 
   // typically need to setup a view for your list opperation. The

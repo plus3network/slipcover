@@ -26,7 +26,9 @@ Method   Route                  Function
 GET     /<plural type>          SlipCover.App.list()
 GET     /<singular type>/:id    SlipCover.App.get()
 PUT     /<plural type>          SlipCover.App.create()
+POST    /<plural type>          SlipCover.App.create()
 POST    /<signular type>/:id    SlipCover.App.update()
+PUT     /<signular type>/:id    SlipCover.App.update()
 DELETE  /<singular type>/:id    SlipCover.App.del()
 ```
 
@@ -38,7 +40,9 @@ Method   Route                  Function
 GET     /users                  SlipCover.App.list()
 GET     /user/:id               SlipCover.App.get()
 PUT     /users                  SlipCover.App.create()
+POST    /users                  SlipCover.App.create()
 POST    /user/:id               SlipCover.App.update()
+PUT     /user/:id               SlipCover.App.update()
 DELETE  /user/:id               SlipCover.App.del()
 ```
 

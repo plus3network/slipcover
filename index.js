@@ -68,7 +68,11 @@ SlipCover.App.prototype.list = function (req, res, next) {
 SlipCover.App.prototype.get = function (req, res, next) {
   this.model.get(req.params.id, function (err, object) {
     if (err) {
-      return next(err);
+      if (err.message === 'missing') {
+        return next(restify.ResourceNotFoundError());
+      } else {
+        return next(err);
+      }
     }
 
     res.send(200, object);
@@ -98,7 +102,11 @@ SlipCover.App.prototype.update = function (req, res, next) {
 SlipCover.App.prototype.del = function (req, res, next) {
   this.model.del(req.params.id, function (err, resp) {
     if (err) {
-      return next(err);
+      if (err.message === 'missing') {
+        return next(restify.ResourceNotFoundError());
+      } else {
+        return next(err);
+      }
     }
 
     res.send(204, resp);

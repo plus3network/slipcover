@@ -1,6 +1,6 @@
 {
   "name": "slipcover",
-  "version": "0.1.1",
+  "version": "0.1.1-1",
   "description": "A library for building web services ontop of CouchDB",
   "main": "index.js",
   "directories": {

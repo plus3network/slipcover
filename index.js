@@ -69,7 +69,7 @@ SlipCover.App.prototype.get = function (req, res, next) {
   this.model.get(req.params.id, function (err, object) {
     if (err) {
       if (err.message === 'missing') {
-        return next(new restify.ResourceNotFoundError('Resource not found')));
+        return next(new restify.ResourceNotFoundError('Resource not found'));
       } else {
         return next(err);
       }

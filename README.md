@@ -24,30 +24,26 @@ The SlipCover.App class comes with some built in routes based on the model type
 Method   Route                  Function
 -------------------------------------------------------
 GET     /<plural type>          SlipCover.App.list()
-GET     /<singular type>/:id    SlipCover.App.get()
+GET     /<plural type>/:id      SlipCover.App.get()
 PUT     /<plural type>          SlipCover.App.create()
 POST    /<plural type>          SlipCover.App.create()
-POST    /<singular type>        SlipCover.App.create()
-PUT     /<singular type>        SlipCover.App.create()
-POST    /<signular type>/:id    SlipCover.App.update()
-PUT     /<signular type>/:id    SlipCover.App.update()
-DELETE  /<singular type>/:id    SlipCover.App.del()
+POST    /<plural type>/:id      SlipCover.App.update()
+PUT     /<plural type>/:id      SlipCover.App.update()
+DELETE  /<plural type>/:id      SlipCover.App.del()
 ```
 
 The above using `user` as the `type` would look like this:
 
 ```
-Method   Route                  Function
+Method   Route                   Function
 -------------------------------------------------------
-GET     /users                  SlipCover.App.list()
-GET     /user/:id               SlipCover.App.get()
-PUT     /users                  SlipCover.App.create()
-POST    /users                  SlipCover.App.create()
-PUT     /user                   SlipCover.App.create()
-POST    /user                   SlipCover.App.create()
-POST    /user/:id               SlipCover.App.update()
-PUT     /user/:id               SlipCover.App.update()
-DELETE  /user/:id               SlipCover.App.del()
+GET     /users                   SlipCover.App.list()
+GET     /users/:id               SlipCover.App.get()
+PUT     /users                   SlipCover.App.create()
+POST    /users                   SlipCover.App.create()
+POST    /users/:id               SlipCover.App.update()
+PUT     /users/:id               SlipCover.App.update()
+DELETE  /users/:id               SlipCover.App.del()
 ```
 
 Each SlipCover.App method has a coresponding SlipCover.model method that matches. So for SlipCover.App.get() there is a coresponding SlipCover.Model.get() that matches.

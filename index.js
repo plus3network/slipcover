@@ -26,14 +26,12 @@ SlipCover.App = function (options) {
   // Setup the default routes
   var defaultRoutes= {};
   defaultRoutes[util.format('GET /%s', inflection.pluralize(this.model.type))] = 'list';
-  defaultRoutes[util.format('GET /%s/:id', inflection.singularize(this.model.type))] = 'get';
+  defaultRoutes[util.format('GET /%s/:id', inflection.pluralize(this.model.type))] = 'get';
   defaultRoutes[util.format('PUT /%s', inflection.pluralize(this.model.type))] = 'create';
   defaultRoutes[util.format('POST /%s', inflection.pluralize(this.model.type))] = 'create';
-  defaultRoutes[util.format('PUT /%s', inflection.singularize(this.model.type))] = 'create';
-  defaultRoutes[util.format('POST /%s', inflection.singularize(this.model.type))] = 'create';
-  defaultRoutes[util.format('POST /%s/:id', inflection.singularize(this.model.type))] = 'update';
-  defaultRoutes[util.format('PUT /%s/:id', inflection.singularize(this.model.type))] = 'update';
-  defaultRoutes[util.format('DELETE /%s/:id', inflection.singularize(this.model.type))] = 'del';
+  defaultRoutes[util.format('POST /%s/:id', inflection.pluralize(this.model.type))] = 'update';
+  defaultRoutes[util.format('PUT /%s/:id', inflection.pluralize(this.model.type))] = 'update';
+  defaultRoutes[util.format('DELETE /%s/:id', inflection.pluralize(this.model.type))] = 'del';
   this.routes = _.extend(defaultRoutes, this.routes);
 
   // We need to bind all the route activities to use the app as it's scope

@@ -92,6 +92,14 @@ SlipCover.App.prototype.create = function (req, res, next) {
 };
 
 SlipCover.App.prototype.update = function (req, res, next) {
+  if (req.body === 'string') {
+    try {
+      req.body = JSON.parse(req.body);
+    } catch (e) {
+      return next(new Error('The request body is not valid JSON'));
+    }
+  }
+
   this.model.update(req.body, function (err, object) {
     if (err) {
       return next(err);

@@ -108,7 +108,7 @@ var ExampleApp = SlipCover.App.extend({
   
   // Extend the default routes with your own.
   routes: {
-    'GET /example/:id/minimal': 'minimal' 
+    'GET /examples/:id/minimal': 'minimal' 
   },
   
   // The custom route method

@@ -34,19 +34,23 @@ describe('index.js SlipCover.prototype.mount(server)', function () {
   });
 
   it('should call server.put for the put route', function () {
-    sinon.assert.calledTwice(server.put);
-    server.put.args[1][0].should.eql('/example/:id');
-    server.put.args[1][1].should.eql(app.update);
+    sinon.assert.calledThrice(server.put);
     server.put.args[0][0].should.eql('/examples');
     server.put.args[0][1].should.eql(app.create);
+    server.put.args[1][0].should.eql('/example');
+    server.put.args[1][1].should.eql(app.create);
+    server.put.args[2][0].should.eql('/example/:id');
+    server.put.args[2][1].should.eql(app.update);
   });
 
   it('should call server.post for the post route', function () {
-    sinon.assert.calledTwice(server.post);
-    server.post.args[1][0].should.eql('/example/:id');
-    server.post.args[1][1].should.eql(app.update);
+    sinon.assert.calledThrice(server.post);
     server.post.args[0][0].should.eql('/examples');
     server.post.args[0][1].should.eql(app.create);
+    server.post.args[1][0].should.eql('/example');
+    server.post.args[1][1].should.eql(app.create);
+    server.post.args[2][0].should.eql('/example/:id');
+    server.post.args[2][1].should.eql(app.update);
   });
 
   it('should call server.del for the put route', function () {

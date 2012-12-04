@@ -92,7 +92,7 @@ SlipCover.App.prototype.create = function (req, res, next) {
 };
 
 SlipCover.App.prototype.update = function (req, res, next) {
-  if (req.body === 'string') {
+  if (typeof(req.body) === 'string') {
     try {
       req.body = JSON.parse(req.body);
     } catch (e) {

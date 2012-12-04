@@ -18,7 +18,7 @@ npm install slipcover
 
 ### Built In Routes
 
-The SlipCover.App class comes with some built in routes based on the model type
+The SlipCover.App class comes with some built in routes based on the model type. For maximum compatability purposes all the collection names are plural and the create/update actions support both POST and PUT.
 
 ```
 Method   Route                  Function

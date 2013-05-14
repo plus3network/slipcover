@@ -27,15 +27,10 @@ SlipCover.App = function (options) {
   var defaultRoutes= {};
   defaultRoutes[util.format('GET /%s', inflection.pluralize(this.model.type))] = 'list';
   defaultRoutes[util.format('GET /%s/:id', inflection.pluralize(this.model.type))] = 'get';
-  defaultRoutes[util.format('PUT /%s', inflection.pluralize(this.model.type))] = 'create';
   defaultRoutes[util.format('POST /%s', inflection.pluralize(this.model.type))] = 'create';
-  defaultRoutes[util.format('POST /%s/:id', inflection.pluralize(this.model.type))] = 'update';
   defaultRoutes[util.format('PUT /%s/:id', inflection.pluralize(this.model.type))] = 'update';
   defaultRoutes[util.format('DELETE /%s/:id', inflection.pluralize(this.model.type))] = 'del';
   this.routes = _.extend(defaultRoutes, this.routes);
-
-  // We need to bind all the route activities to use the app as it's scope
-  _.bindAll(this, 'get', 'list', 'create', 'update', 'del');
 
   if (this.initialize && typeof(this.initialize) === 'function') {
     this.initialize.call(this, options);
@@ -80,6 +75,14 @@ SlipCover.App.prototype.get = function (req, res, next) {
 };
 
 SlipCover.App.prototype.create = function (req, res, next) {
+  if (typeof(req.body) === 'string' && req.header('content-type') === 'application/json') {
+    try {
+      req.body = JSON.parse(req.body);
+    } catch (e) {
+      return next(new Error('The request body is not valid JSON'));
+    }
+  }
+
   this.model.create(req.body, function (err, object) {
     if (err) {
       return next(err);
@@ -90,7 +93,7 @@ SlipCover.App.prototype.create = function (req, res, next) {
 };
 
 SlipCover.App.prototype.update = function (req, res, next) {
-  if (typeof(req.body) === 'string') {
+  if (typeof(req.body) === 'string' && req.header('content-type') === 'application/json') {
     try {
       req.body = JSON.parse(req.body);
     } catch (e) {
@@ -136,7 +139,7 @@ SlipCover.App.prototype.mount = function (server) {
 
       // Now that we have the verb and route we need to hook it up to the callback
       if (self[action] && typeof(self[action]) === 'function') {
-        server[verb](parts[1], self[action]);
+        server[verb](parts[1], self[action].bind(self));
       }
     }
   });

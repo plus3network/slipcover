@@ -99,13 +99,6 @@ var ExampleModel = SlipCover.Model.extend({
 
 var ExampleApp = SlipCover.App.extend({
   
-  // Just like backbone you can setup your own initialize method
-  initialize: funciton (options) {
-    // You will need to bind the instance of this object to
-    // your route methods.
-    _.bindAll(this, 'minimal');
-  },
-  
   // Extend the default routes with your own.
   routes: {
     'GET /examples/:id/minimal': 'minimal' 

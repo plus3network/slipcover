@@ -18,16 +18,14 @@ npm install slipcover
 
 ### Built In Routes
 
-The SlipCover.App class comes with some built in routes based on the model type. For maximum compatability purposes all the collection names are plural and the create/update actions support both POST and PUT.
+The SlipCover.App class comes with some built in routes based on the model type. 
 
 ```
 Method   Route                  Function
 -------------------------------------------------------
 GET     /<plural type>          SlipCover.App.list()
 GET     /<plural type>/:id      SlipCover.App.get()
-PUT     /<plural type>          SlipCover.App.create()
 POST    /<plural type>          SlipCover.App.create()
-POST    /<plural type>/:id      SlipCover.App.update()
 PUT     /<plural type>/:id      SlipCover.App.update()
 DELETE  /<plural type>/:id      SlipCover.App.del()
 ```
@@ -39,9 +37,7 @@ Method   Route                   Function
 -------------------------------------------------------
 GET     /users                   SlipCover.App.list()
 GET     /users/:id               SlipCover.App.get()
-PUT     /users                   SlipCover.App.create()
 POST    /users                   SlipCover.App.create()
-POST    /users/:id               SlipCover.App.update()
 PUT     /users/:id               SlipCover.App.update()
 DELETE  /users/:id               SlipCover.App.del()
 ```
